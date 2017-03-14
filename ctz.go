@@ -1,20 +1,14 @@
-// +build !amd64 appengine
-
 package bits
 
 // Ctz counts trailing zeroes
-func Ctz(x uint64) uint64 {
+func Ctz32(x uint64) uint64 {
 
 	if x == 0 {
-		return 64
+		return 32
 	}
 
 	var n uint64
 
-	if (x & 0x00000000FFFFFFFF) == 0 {
-		n = n + 32
-		x = x >> 32
-	}
 	if (x & 0x000000000000FFFF) == 0 {
 		n = n + 16
 		x = x >> 16

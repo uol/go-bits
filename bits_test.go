@@ -6,8 +6,8 @@ import (
 )
 
 func testQuick(t *testing.T, which string, ffast, fslow func(x uint64) uint64) {
-	f := func(x uint64) bool {
-		return ffast(x) == fslow(x)
+	f := func(x uint32) bool {
+		return ffast(uint64(x)) == fslow(uint64(x))
 	}
 	if err := quick.Check(f, nil); err != nil {
 		t.Errorf("fast%v != slow%v: %v: ", which, which, err)
@@ -20,31 +20,18 @@ func ctzSlow(x uint64) uint64 {
 		n++
 		x >>= 1
 	}
-	return n
+	return uint64(n)
 }
 
-func TestQuickCtz(t *testing.T) { testQuick(t, "ctz", Ctz, ctzSlow) }
+func TestQuickCtz(t *testing.T) { testQuick(t, "ctz", Ctz32, ctzSlow) }
 
 func clzSlow(x uint64) uint64 {
 	var n uint64
-	for x&0x8000000000000000 == 0 {
+	for x&0x80000000 == 0 {
 		n++
 		x <<= 1
 	}
-	return n
+	return uint64(n)
 }
 
-func TestQuickClz(t *testing.T) { testQuick(t, "clz", Clz, clzSlow) }
-
-func popcntSlow(x uint64) uint64 {
-	var n uint64
-	for x != 0 {
-		if x&1 == 1 {
-			n++
-		}
-		x >>= 1
-	}
-	return n
-}
-
-func TestQuickPopcnt(t *testing.T) { testQuick(t, "popcnt", Popcnt, popcntSlow) }
+func TestQuickClz(t *testing.T) { testQuick(t, "clz", Clz32, clzSlow) }
